@@ -22,8 +22,6 @@ require("awful.hotkeys_popup.keys")
 local debian = require("debian.menu")
 local has_fdo, freedesktop = pcall(require, "freedesktop")
 
-require('configuration.startup')
-
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
 -- another config (This code will only ever execute for the fallback config)
@@ -70,11 +68,11 @@ modkey = "Mod4"
 -- Table of layouts to cover with awful.layout.inc, order matters.
 awful.layout.layouts = {
     awful.layout.suit.floating,
-    awful.layout.suit.magnifier,
-    awful.layout.suit.max,
-    awful.layout.suit.tile,
+    -- awful.layout.suit.magnifier,
+    -- awful.layout.suit.max,
+    -- awful.layout.suit.tile,
     -- awful.layout.suit.tile.left,
-    awful.layout.suit.tile.bottom,
+    -- awful.layout.suit.tile.bottom,
     -- awful.layout.suit.tile.top,
     awful.layout.suit.fair,
     -- awful.layout.suit.fair.horizontal,
@@ -434,13 +432,12 @@ for i = 1, 9 do
     globalkeys = gears.table.join(globalkeys,
         -- View tag only.
         awful.key({ modkey }, "#" .. i + 9,
-                  function ()
-                        awful.screen.connect_for_each_screen(function(s) 
-                            local tag = s.tags[i]
-                            if tag then
-                               tag:view_only()
-                            end
-                        end)
+                 function ()
+                        local screen = awful.screen.focused()
+                        local tag = screen.tags[i]
+                        if tag then
+                           tag:view_only()
+                        end
                   end,
                   {description = "view tag #"..i, group = "tag"}),
         -- Toggle tag display.
@@ -606,7 +603,7 @@ client.connect_signal("request::titlebars", function(c)
             direction = "east",
         },
         { -- Right
-            awful.titlebar.widget.floatingbutton (c),
+            -- awful.titlebar.widget.floatingbutton (c),
             awful.titlebar.widget.stickybutton   (c),
             awful.titlebar.widget.ontopbutton    (c),
             awful.titlebar.widget.iconwidget(c),
@@ -624,3 +621,5 @@ end)
 client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 -- }}}
+
+require('configuration.startup')
