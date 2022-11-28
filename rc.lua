@@ -368,7 +368,10 @@ awful.key({ modkey, "Control" }, "q", awesome.quit,
     { description = "lua execute prompt", group = "awesome" }),
   -- Menubar
   awful.key({ modkey }, "space", function() menubar.show() end,
-    { description = "show the menubar", group = "launcher" })
+    { description = "show the menubar", group = "launcher" }),
+  awful.key({ modkey }, "r", function ()
+    awful.spawn("rofi -show combi -combi-modes 'window,run,ssh' -modes combi")
+  end, { description = "show rofi window", group = "launcher"})
 )
 
 clientkeys = gears.table.join(
