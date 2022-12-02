@@ -5,11 +5,9 @@
 local theme_assets = require("beautiful.theme_assets")
 local xresources = require("beautiful.xresources")
 local dpi = xresources.apply_dpi
-
 local gfs = require("gears.filesystem")
 local themes_path = gfs.get_themes_dir()
-
-local theme = {}
+local theme = require("bling_theme")
 
 -- [original] theme.font          = "sans 8"
 theme.font          = "Ubuntu Mono Bold 11"
@@ -25,10 +23,10 @@ theme.fg_focus      = "#3bf770" --"#096F09"
 theme.fg_urgent     = "#ffffff"
 theme.fg_minimize   = "#ffffff"
 
-theme.useless_gap   = dpi(0)
+theme.useless_gap   = dpi(10)
 theme.border_width  = dpi(0)
-theme.border_normal = "#000000" --"#096F09"
-theme.border_focus  = "#096F09" -- "#40C440"
+theme.border_normal = "#00000000" --"#096F09"
+theme.border_focus  = "#00000000" -- "#40C440"
 theme.border_marked = "#91231c"
 
 -- theme.taglist_bg_normal = "40C440" --"#096F09"
@@ -130,7 +128,7 @@ theme.layout_cornerse = themes_path.."default/layouts/cornersew.png"
 
 -- Generate Awesome icon:
 theme.awesome_icon = theme_assets.awesome_icon(
-    theme.menu_height, theme.bg_focus, theme.fg_focus
+    theme.menu_height, theme.bg_normal, theme.fg_normal
 )
 
 -- Define the icon theme for application icons. If not set then the icons

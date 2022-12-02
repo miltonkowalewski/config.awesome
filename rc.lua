@@ -51,6 +51,65 @@ end
 -- Themes define colours, icons, font and wallpapers.
 -- beautiful.init(gears.filesystem.get_themes_dir() .. "zenburn/theme.lua")
 beautiful.init("/home/milton/.config/awesome/theme.lua")
+local bling = require("bling")
+
+bling.widget.task_preview.enable {
+  x = 0,                    -- The x-coord of the popup
+  y = 0,                    -- The y-coord of the popup
+  height = 300,              -- The height of the popup
+  width = 300,               -- The width of the popup
+  placement_fn = function(c) -- Place the widget using awful.placement (this overrides x & y)
+      awful.placement.bottom(c, {
+          margins = {
+            bottom = 30
+          }
+      })
+  end
+}
+
+bling.module.window_swallowing.start()
+
+bling.widget.tag_preview.enable {
+  show_client_content = true, -- Whether or not to show the client content
+  x = 10, -- The x-coord of the popup
+  y = 10, -- The y-coord of the popup
+  scale = 0.25, -- The scale of the previews compared to the screen
+  honor_padding = false, -- Honor padding when creating widget size
+  honor_workarea = false, -- Honor work area when creating widget size
+  placement_fn = function(c) -- Place the widget using awful.placement (this overrides x & y)
+    awful.placement.bottom(c, {
+      margins = {
+        bottom = 30,
+        left = 30
+      }
+    })
+  end,
+  background_widget = wibox.widget { -- Set a background image (like a wallpaper) for the widget
+    image                 = beautiful.wallpaper,
+    horizontal_fit_policy = "fit",
+    vertical_fit_policy   = "fit",
+    widget                = wibox.widget.imagebox
+  }
+}
+
+bling.widget.window_switcher.enable {
+  type = "thumbnail", -- set to anything other than "thumbnail" to disable client previews
+
+  -- keybindings (the examples provided are also the default if kept unset)
+  hide_window_switcher_key = "Escape", -- The key on which to close the popup
+  minimize_key = "n",                  -- The key on which to minimize the selected client
+  unminimize_key = "N",                -- The key on which to unminimize all clients
+  kill_client_key = "q",               -- The key on which to close the selected client
+  cycle_key = "Tab",                   -- The key on which to cycle through all clients
+  previous_key = "Left",               -- The key on which to select the previous client
+  next_key = "Right",                  -- The key on which to select the next client
+  vim_previous_key = "h",              -- Alternative key on which to select the previous client
+  vim_next_key = "l",                  -- Alternative key on which to select the next client
+
+  cycleClientsByIdx = awful.client.focus.byidx,               -- The function to cycle the clients
+  filterClients = awful.widget.tasklist.filter.currenttags,   -- The function to filter the viewed clients
+}
+
 
 -- This is used later as the default terminal and editor to run.
 -- terminal = "x-terminal-emulator"
@@ -71,12 +130,12 @@ awful.layout.layouts = {
   awful.layout.suit.floating,
   awful.layout.suit.magnifier,
   awful.layout.suit.max,
-  awful.layout.suit.tile,
-  awful.layout.suit.tile.left,
+  -- awful.layout.suit.tile,
+  -- awful.layout.suit.tile.left,
   awful.layout.suit.tile.bottom,
   awful.layout.suit.tile.top,
-  awful.layout.suit.fair,
-  awful.layout.suit.fair.horizontal,
+  -- awful.layout.suit.fair,
+  -- awful.layout.suit.fair.horizontal,
   -- awful.layout.suit.spiral,
   -- awful.layout.suit.spiral.dwindle,
   -- awful.layout.suit.corner.nw,
@@ -84,6 +143,12 @@ awful.layout.layouts = {
   -- awful.layout.suit.corner.ne,
   -- awful.layout.suit.corner.sw,
   -- awful.layout.suit.corner.se,
+  bling.layout.mstab,
+  bling.layout.centered,
+  -- bling.layout.vertical,
+  -- bling.layout.horizontal,
+  -- bling.layout.equalarea,
+  bling.layout.deck,
 }
 -- }}}
 
@@ -139,7 +204,7 @@ local taglist_buttons = gears.table.join(
     end
   end),
   awful.button({}, 3, awful.tag.viewtoggle),
-awful.button({ modkey }, 3, function(t)
+  awful.button({ modkey }, 3, function(t)
     if client.focus then
       client.focus:toggle_tag(t)
     end
@@ -194,17 +259,17 @@ awful.screen.connect_for_each_screen(function(s)
     { "ws-1", "ws-2", "ws-3", "ws-4", "ws-5", "ws-6", "ws-7", "ws-8", "ws-9" },
     s,
     {
-      awful.layout.suit.floating,
-      awful.layout.suit.floating,
-      awful.layout.suit.floating,
-      awful.layout.suit.floating,
-      awful.layout.suit.floating,
-      awful.layout.suit.floating,
-      awful.layout.suit.floating,
-      awful.layout.suit.floating,
-      awful.layout.suit.floating,
+      bling.layout.deck,
+      bling.layout.deck,
+      bling.layout.deck,
+      bling.layout.deck,
+      bling.layout.deck,
+      bling.layout.deck,
+      bling.layout.deck,
+      bling.layout.deck,
+      bling.layout.deck,
     }
-)
+  )
 
   -- Create a promptbox for each screen
   s.mypromptbox = awful.widget.prompt()
@@ -218,20 +283,132 @@ awful.screen.connect_for_each_screen(function(s)
   --     awful.button({}, 5, function() awful.layout.inc(-1) end)))
   -- Create a taglist widget
   s.mytaglist = awful.widget.taglist {
-    screen  = s,
-    filter  = awful.widget.taglist.filter.noempty, -- all | selected | noempty
-    buttons = taglist_buttons
+    screen          = s,
+    filter          = awful.widget.taglist.filter.noempty,
+    style           = {
+      shape = gears.shape.powerline
+    },
+    widget_template = {
+      {
+        {
+          {
+            {
+              {
+                id     = 'index_role',
+                widget = wibox.widget.textbox,
+              },
+              margins = 0,
+              widget  = wibox.container.margin,
+            },
+            widget = wibox.container.background,
+          },
+          -- {
+          --   id     = 'text_role',
+          --   widget = wibox.widget.textbox,
+          -- },
+          layout = wibox.layout.fixed.horizontal,
+        },
+        left   = 15,
+        right  = 15,
+        widget = wibox.container.margin
+      },
+      id              = 'background_role',
+      widget          = wibox.container.background,
+      -- Add support for hover colors and an index label
+      create_callback = function(self, c3, index, objects) --luacheck: no unused args
+        self:get_children_by_id('index_role')[1].markup = '<b> ' .. index .. ' </b>'
+        self:connect_signal('mouse::enter', function()
+
+          -- BLING: Only show widget when there are clients in the tag
+          if #c3:clients() > 0 then
+            -- BLING: Update the widget with the new tag
+            awesome.emit_signal("bling::tag_preview::update", c3)
+            -- BLING: Show the widget
+            awesome.emit_signal("bling::tag_preview::visibility", s, true)
+          end
+
+          if self.bg ~= '#053d05' then
+            self.backup     = self.bg
+            self.has_backup = true
+          end
+          self.bg = '#053d05'
+        end)
+        self:connect_signal('mouse::leave', function()
+
+          -- BLING: Turn the widget off
+          awesome.emit_signal("bling::tag_preview::visibility", s, false)
+
+          if self.has_backup then self.bg = self.backup end
+        end)
+      end,
+      update_callback = function(self, c3, index, objects) --luacheck: no unused args
+        self:get_children_by_id('index_role')[1].markup = '<b> ' .. index .. ' </b>'
+      end,
+    },
+    buttons         = taglist_buttons
   }
 
   -- Create a tasklist widget
   s.mytasklist = awful.widget.tasklist {
-    screen  = s,
-    filter  = awful.widget.tasklist.filter.currenttags,
-    buttons = tasklist_buttons
+      screen   = s,
+      filter   = awful.widget.tasklist.filter.currenttags,
+      buttons  = tasklist_buttons,
+      layout   = {
+          spacing_widget = {
+              {
+                  forced_width  = 5,
+                  forced_height = 24,
+                  thickness     = 1,
+                  color         = '#777777',
+                  widget        = wibox.widget.separator
+              },
+              valign = 'center',
+              halign = 'center',
+              widget = wibox.container.place,
+          },
+          spacing = 1,
+          layout  = wibox.layout.fixed.horizontal
+      },
+      -- Notice that there is *NO* wibox.wibox prefix, it is a template,
+      -- not a widget instance.
+      widget_template = {
+          {
+              wibox.widget.base.make_widget(),
+              -- forced_height = 2,
+              id            = 'background_role',
+              widget        = wibox.container.background,
+          },
+          {
+              {
+                  id     = 'clienticon',
+                  widget = awful.widget.clienticon,
+              },
+              -- margins = 0,
+              left   = 15,
+              right  = 15,
+              align  = "center",
+              widget  = wibox.container.margin
+          },
+          nil,
+          create_callback = function(self, c, index, objects) --luacheck: no unused args
+              self:get_children_by_id('clienticon')[1].client = c
+
+              -- BLING: Toggle the popup on hover and disable it off hover
+              self:connect_signal('mouse::enter', function()
+                      awesome.emit_signal("bling::task_preview::visibility", s,
+                                          true, c)
+                  end)
+                  self:connect_signal('mouse::leave', function()
+                      awesome.emit_signal("bling::task_preview::visibility", s,
+                                          false, c)
+                  end)
+          end,
+          layout = wibox.layout.align.vertical,
+      },
   }
 
   -- Create the wibox
-  s.mywibox = awful.wibar({ position = "top", screen = s })
+  s.mywibox = awful.wibar({ position = "bottom", screen = s, height = 25 })
 
   -- Add widgets to the wibox
   s.mywibox:setup {
@@ -272,7 +449,7 @@ root.buttons(gears.table.join(
 
 -- {{{ Key bindings
 globalkeys = gears.table.join(
-  -- awful.menu.client_list({ theme = { width = 250 } }) # TODO: Criar shortcut
+-- awful.menu.client_list({ theme = { width = 250 } }) # TODO: Criar shortcut
   awful.key({ modkey }, "p", function() awful.menu.client_list({ theme = { width = 250 } }) end,
     { description = "open client windows", group = "launcher" }),
   awful.key({ modkey, }, "s", hotkeys_popup.show_help,
@@ -324,7 +501,7 @@ globalkeys = gears.table.join(
     { description = "open a terminal", group = "launcher" }),
   awful.key({ modkey, "Shift" }, "r", awesome.restart,
     { description = "reload awesome", group = "awesome" }),
-awful.key({ modkey, "Control" }, "q", awesome.quit,
+  awful.key({ modkey, "Control" }, "q", awesome.quit,
     { description = "quit awesome", group = "awesome" }),
 
   awful.key({ modkey, }, "g", function() awful.tag.incmwfact(0.05) end,
@@ -339,7 +516,7 @@ awful.key({ modkey, "Control" }, "q", awesome.quit,
     { description = "increase the number of columns", group = "layout" }),
   awful.key({ modkey, "Control" }, "l", function() awful.tag.incncol(-1, nil, true) end,
     { description = "decrease the number of columns", group = "layout" }),
-  awful.key({ modkey, }, "Tab", function() awful.layout.inc(1) end,
+  awful.key({ modkey, }, "Tab", function() awesome.emit_signal("bling::window_switcher::turn_on") end,
     { description = "select next", group = "layout" }),
   awful.key({ modkey, "Shift" }, "space", function() awful.layout.inc(-1) end,
     { description = "select previous", group = "layout" }),
@@ -369,9 +546,9 @@ awful.key({ modkey, "Control" }, "q", awesome.quit,
   -- Menubar
   awful.key({ modkey }, "space", function() menubar.show() end,
     { description = "show the menubar", group = "launcher" }),
-  awful.key({ modkey }, "r", function ()
+  awful.key({ modkey }, "r", function()
     awful.spawn("rofi -show combi -combi-modes 'window,run,ssh' -modes combi")
-  end, { description = "show rofi window", group = "launcher"})
+  end, { description = "show rofi window", group = "launcher" })
 )
 
 clientkeys = gears.table.join(
@@ -413,17 +590,17 @@ clientkeys = gears.table.join(
   awful.key({ modkey, "Shift" }, "m",
     function(c)
       c.maximized_horizontal = not c.maximized_horizontal
-c:raise()
-end,
-{ description = "(un)maximize horizontally", group = "client" })
+      c:raise()
+    end,
+    { description = "(un)maximize horizontally", group = "client" })
 )
 
 -- Bind all key numbers to tags.
 -- Be careful: we use keycodes to make it work on any keyboard layout.
 -- This should map on the top row of your keyboard, usually 1 to 9.
 for i = 1, 9 do
-globalkeys = gears.table.join(globalkeys,
-  -- View tag only.
+  globalkeys = gears.table.join(globalkeys,
+    -- View tag only.
     awful.key({ modkey }, "#" .. i + 9,
       function()
         local screen = awful.screen.focused()
@@ -504,12 +681,12 @@ awful.rules.rules =
     }
   },
 
--- Floating clients.
-{
-rule_any = {
-  instance = {
-  "DTA", -- Firefox addon DownThemAll.
-"copyq", -- Includes session name in class.
+  -- Floating clients.
+  {
+    rule_any = {
+      instance = {
+        "DTA", -- Firefox addon DownThemAll.
+        "copyq", -- Includes session name in class.
         "pinentry",
       },
       class = {
@@ -559,8 +736,8 @@ client.connect_signal("manage", function(c)
   -- if not awesome.startup then awful.client.setslave(c) end
 
   if awesome.startup
-    and not c.size_hints.user_position
-    and not c.size_hints.program_position then
+      and not c.size_hints.user_position
+      and not c.size_hints.program_position then
     -- Prevent clients from being unreachable after screen count changes.
     awful.placement.no_offscreen(c)
   end
@@ -580,19 +757,19 @@ client.connect_signal("request::titlebars", function(c)
     end)
   )
 
-awful.titlebar(c, { position = 'left', size = 17 }):setup {
-  { -- Left
-{
-awful.titlebar.widget.closebutton(c),
-awful.titlebar.widget.maximizedbutton(c),
-awful.titlebar.widget.minimizebutton(c),
-layout = wibox.layout.fixed.vertical
-},
-widget = wibox.container.margin
-},
-    { -- Middle
+  awful.titlebar(c, { position = 'left', size = 17 }):setup {
+    { -- Left
       {
-        { -- Title
+        awful.titlebar.widget.closebutton(c),
+        awful.titlebar.widget.maximizedbutton(c),
+        awful.titlebar.widget.minimizebutton(c),
+        layout = wibox.layout.fixed.vertical
+      },
+      widget = wibox.container.margin
+    },
+    { -- Middle
+    {
+      { -- Title
           align  = "center",
           widget = awful.titlebar.widget.titlewidget(c)
         },
@@ -603,7 +780,7 @@ widget = wibox.container.margin
       direction = "east",
     },
     { -- Right
-      -- awful.titlebar.widget.floatingbutton (c),
+    -- awful.titlebar.widget.floatingbutton (c),
       awful.titlebar.widget.stickybutton(c),
       awful.titlebar.widget.ontopbutton(c),
       awful.titlebar.widget.iconwidget(c),
@@ -622,4 +799,8 @@ client.connect_signal("focus", function(c) c.border_color = beautiful.border_foc
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 -- }}}
 
-require('configuration.startup')
+require('config.startup')
+
+--- Enable for lower memory consumption
+collectgarbage("setpause", 110)
+collectgarbage("setstepmul", 1000)

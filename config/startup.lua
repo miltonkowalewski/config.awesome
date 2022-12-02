@@ -1,5 +1,5 @@
 local awful = require('awful')
-require('configuration.your_startup_list')
+require('config.your_startup_list')
 
 -- List of apps to start once on start-up
 local run_on_start_up = {
@@ -45,3 +45,4 @@ end
 for _, app in ipairs(run_on_start_up) do
   run_once(app)
 end
+
