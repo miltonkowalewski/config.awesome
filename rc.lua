@@ -67,7 +67,7 @@ bling.widget.task_preview.enable {
   end
 }
 
-bling.module.window_swallowing.start()
+-- bling.module.window_swallowing.start()
 
 bling.widget.tag_preview.enable {
   show_client_content = true, -- Whether or not to show the client content
@@ -128,7 +128,7 @@ modkey = "Mod4"
 -- Table of layouts to cover with awful.layout.inc, order matters.
 awful.layout.layouts = {
   awful.layout.suit.floating,
-  awful.layout.suit.magnifier,
+  -- awful.layout.suit.magnifier,
   awful.layout.suit.max,
   -- awful.layout.suit.tile,
   -- awful.layout.suit.tile.left,
@@ -162,8 +162,8 @@ myawesomemenu = {
   { "quit", function() awesome.quit() end },
 }
 
-local menu_awesome = { "awesome", myawesomemenu, beautiful.awesome_icon }
-local menu_terminal = { "open terminal", terminal }
+local menu_awesome = { "Awesome", myawesomemenu, beautiful.awesome_icon }
+local menu_terminal = { "Open terminal", terminal }
 
 if has_fdo then
   mymainmenu = freedesktop.menu.build({
@@ -353,58 +353,48 @@ awful.screen.connect_for_each_screen(function(s)
       screen   = s,
       filter   = awful.widget.tasklist.filter.currenttags,
       buttons  = tasklist_buttons,
-      layout   = {
-          spacing_widget = {
-              {
-                  forced_width  = 5,
-                  forced_height = 24,
-                  thickness     = 1,
-                  color         = '#777777',
-                  widget        = wibox.widget.separator
-              },
-              valign = 'center',
-              halign = 'center',
-              widget = wibox.container.place,
-          },
-          spacing = 1,
-          layout  = wibox.layout.fixed.horizontal
-      },
+      -- layout   = {
+      --     spacing_widget = {
+      --         {
+      --             forced_width  = 5,
+      --             forced_height = 24,
+      --             thickness     = 1,
+      --             color         = '#777777',
+      --             widget        = wibox.widget.separator
+      --         },
+      --         valign = 'center',
+      --         halign = 'center',
+      --         widget = wibox.container.place,
+      --     },
+      --     spacing = 1,
+      --     layout  = wibox.layout.fixed.horizontal
+      -- },
       -- Notice that there is *NO* wibox.wibox prefix, it is a template,
       -- not a widget instance.
       widget_template = {
-          {
-              wibox.widget.base.make_widget(),
-              -- forced_height = 2,
-              id            = 'background_role',
-              widget        = wibox.container.background,
-          },
-          {
-              {
-                  id     = 'clienticon',
-                  widget = awful.widget.clienticon,
-              },
-              -- margins = 0,
-              left   = 15,
-              right  = 15,
-              align  = "center",
-              widget  = wibox.container.margin
-          },
-          nil,
-          create_callback = function(self, c, index, objects) --luacheck: no unused args
-              self:get_children_by_id('clienticon')[1].client = c
-
-              -- BLING: Toggle the popup on hover and disable it off hover
-              self:connect_signal('mouse::enter', function()
-                      awesome.emit_signal("bling::task_preview::visibility", s,
-                                          true, c)
-                  end)
-                  self:connect_signal('mouse::leave', function()
-                      awesome.emit_signal("bling::task_preview::visibility", s,
-                                          false, c)
-                  end)
-          end,
-          layout = wibox.layout.align.vertical,
-      },
+        {
+            {
+                -- {
+                --     {
+                --         id     = 'icon_role',
+                --         widget = wibox.widget.imagebox,
+                --     },
+                --     margins = 2,
+                --     widget  = wibox.container.margin,
+                -- },
+                {
+                    id     = 'text_role',
+                    widget = wibox.widget.textbox,
+                },
+                layout = wibox.layout.fixed.horizontal,
+            },
+            left  = 10,
+            right = 10,
+            widget = wibox.container.margin
+        },
+        id     = 'background_role',
+        widget = wibox.container.background,
+    },
   }
 
   -- Create the wibox
