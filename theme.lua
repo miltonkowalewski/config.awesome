@@ -136,7 +136,7 @@ theme.awesome_icon = theme_assets.awesome_icon(
 theme.icon_theme = nil
 
 theme.menu_submenu_icon = ""
-theme.menu_width = 150
+theme.menu_width = 250
 
 return theme
 
